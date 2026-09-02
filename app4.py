@@ -130,23 +130,19 @@ if not el_error_fue_evadido and not df_alertas.empty:
     
     # 🎯 CONVERTIDOR EXCEL BINARIO INTERNO: Prepara la descarga sin consumir memoria del servidor
     if not df_alertas_filtrado.empty:
-        # Limpiamos las columnas internas de llaves numéricas previas antes de entregar el archivo al usuario
         df_descarga = df_alertas_filtrado.copy()
         
-        # Renombramos las columnas lógicas internas por nombres de informe ejecutivos formales
-        df_descarga = df_descarga.rename(columns={
-            'Col_0': 'Fecha y Hora',
-            'Tipo_Incidente': 'Clasificación Evento',
-            'Col_3': 'Detalle / Subtipo',
-            'Col_4': 'Eje Vial / Calle'
-        })
+        # 🔍 ASIGNACIÓN MANUAL SEGURA: Mapeamos los casilleros de forma independiente para no fallar jamás
+        df_final_excel = pd.DataFrame()
+        df_final_excel['Fecha y Hora'] = df_descarga['Col_0'].astype(str).str.strip()
+        df_final_excel['Clasificación del Evento'] = df_descarga['Tipo_Incidente'].astype(str).str.strip()
+        df_final_excel['Detalle del Incidente'] = df_descarga['Col_3'].astype(str).str.strip()
+        df_final_excel['Calle / Eje Vial'] = df_descarga['Col_4'].astype(str).str.strip()
+        df_final_excel['Latitud'] = df_descarga['Latitud']
+        df_final_excel['Longitud'] = df_descarga['Longitud']
         
-        # Conservamos únicamente los casilleros de reporte útiles para tus minutas de oficina
-        columnas_finales = [c for c in ['Fecha y Hora', 'Clasificación Evento', 'Detalle / Subtipo', 'Eje Vial / Calle', 'Latitud', 'Longitud'] if c in df_descarga.columns]
-        df_descarga = df_descarga[columnas_finales]
-        
-        # Codificamos a formato CSV con codificación elástica para que mantenga las tildes chilenas en Microsoft Excel
-        csv_datos = df_descarga.to_csv(index=False, encoding='utf-8-sig').encode('utf-8-sig')
+        # 🎯 LA CLAVE TÉCNICA: Usamos punto y coma (sep=';') y el encoding utf-8-sig para chilenizar las celdas
+        csv_datos = df_final_excel.to_csv(sep=';', index=False, encoding='utf-8-sig').encode('utf-8-sig')
         
         # Nombre dinámico automático del archivo adjunto según el rango temporal
         nombre_archivo_csv = f"reporte_gestion_vial_{inicio_sel.strftime('%d%m%Y')}_al_{fin_sel.strftime('%d%m%Y')}.csv"
@@ -168,6 +164,7 @@ else:
 
 # DEFINICIÓN GLOBAL DE PESTAÑAS AL RAS DE LA IZQUIERDA
 tab_incidentes, tab_rutas = st.tabs(["🚨 Incidentes Regionales", "🚘 Flujo y Velocidades Urbano"])
+
 
 # ==========================================
 # 📊 DESPLIEGUE INTERFAZ DE PANELES (MAPA REGIONAL MAXIMIZADO)
