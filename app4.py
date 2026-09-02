@@ -147,7 +147,7 @@ if not el_error_fue_evadido and not df_alertas.empty:
         # Guardamos las coordenadas limpias en un texto plano
         coordenadas_limpias = df_descarga['Latitud'].astype(str) + "," + df_descarga['Longitud'].astype(str)
         
-        # 🎯 LA CORRECCIÓN DEFINITIVA: Cambiamos a HIPERVINCULO en español y forzamos el punto y coma (;) exacto
+        # Fórmula HIPERVINCULO nativa en español chileno
         df_final_excel['Coordenadas (Ver en Google Maps)'] = (
             '=HIPERVINCULO("' + url_maps_completa + coordenadas_limpias + '";"' + coordenadas_limpias + '")'
         )
@@ -173,8 +173,8 @@ else:
     inicio_sel = date(2026, 9, 1)
     fin_sel = date(2026, 9, 1)
 
-# DEFINICIÓN GLOBAL DE PESTAÑAS AL RAS DE LA IZQUIERDA
-tab_incidentes, tab_rutas = st.tabs(["🚨 Incidentes Regionales", "🚘 Flujo y Velocidades Urbano"])
+# 🎯 ELIMINACIÓN ABSOLUTA: Aquí ya no hay st.tabs, el mapa enganchará directo abajo
+
 
 
 
