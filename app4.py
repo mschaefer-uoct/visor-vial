@@ -122,14 +122,52 @@ if not el_error_fue_evadido and not df_alertas.empty:
     opciones_fijas = ['ACCIDENTE', 'SEMÁFORO CON FALLA', 'ATASCO / CONGESTIÓN', 'PELIGRO EN LA VÍA', 'CIERRE DE VÍA']
     tipos_seleccionados = st.sidebar.multiselect("Categorías de Incidentes:", options=opciones_fijas, default=opciones_fijas)
 
-    # FILTRADO DINÁMICO DE EXTREMOS POR PANDAS (Omitimos filtro de subtipo por solicitud)
+    # FILTRADO DINÁMICO DE EXTREMOS POR PANDAS
     df_alertas_filtrado = df_alertas[(df_alertas['Fecha_Solo'] >= inicio_sel) & (df_alertas['Fecha_Solo'] <= fin_sel) & (df_alertas['Tipo_Incidente'].isin(tipos_seleccionados))]
+
+    st.sidebar.write("---")
+    st.sidebar.markdown("### 📥 Exportación de Reportes")
+    
+    # 🎯 CONVERTIDOR EXCEL BINARIO INTERNO: Prepara la descarga sin consumir memoria del servidor
+    if not df_alertas_filtrado.empty:
+        # Limpiamos las columnas internas de llaves numéricas previas antes de entregar el archivo al usuario
+        df_descarga = df_alertas_filtrado.copy()
+        
+        # Renombramos las columnas lógicas internas por nombres de informe ejecutivos formales
+        df_descarga = df_descarga.rename(columns={
+            'Col_0': 'Fecha y Hora',
+            'Tipo_Incidente': 'Clasificación Evento',
+            'Col_3': 'Detalle / Subtipo',
+            'Col_4': 'Eje Vial / Calle'
+        })
+        
+        # Conservamos únicamente los casilleros de reporte útiles para tus minutas de oficina
+        columnas_finales = [c for c in ['Fecha y Hora', 'Clasificación Evento', 'Detalle / Subtipo', 'Eje Vial / Calle', 'Latitud', 'Longitud'] if c in df_descarga.columns]
+        df_descarga = df_descarga[columnas_finales]
+        
+        # Codificamos a formato CSV con codificación elástica para que mantenga las tildes chilenas en Microsoft Excel
+        csv_datos = df_descarga.to_csv(index=False, encoding='utf-8-sig').encode('utf-8-sig')
+        
+        # Nombre dinámico automático del archivo adjunto según el rango temporal
+        nombre_archivo_csv = f"reporte_gestion_vial_{inicio_sel.strftime('%d%m%Y')}_al_{fin_sel.strftime('%d%m%Y')}.csv"
+        
+        # Widget nativo de descarga directa de Streamlit
+        st.sidebar.download_button(
+            label="📊 Descargar Alertas Filtradas (Excel)",
+            data=csv_datos,
+            file_name=nombre_archivo_csv,
+            mime="text/csv",
+            key="boton_descarga_alertas_seremi_cloud"
+        )
+    else:
+        st.sidebar.info("No hay registros en el rango seleccionado para exportar.")
 else:
     df_alertas_filtrado = pd.DataFrame()
     inicio_sel = date(2026, 9, 1)
     fin_sel = date(2026, 9, 1)
 
-
+# DEFINICIÓN GLOBAL DE PESTAÑAS AL RAS DE LA IZQUIERDA
+tab_incidentes, tab_rutas = st.tabs(["🚨 Incidentes Regionales", "🚘 Flujo y Velocidades Urbano"])
 
 # ==========================================
 # 📊 DESPLIEGUE INTERFAZ DE PANELES (MAPA REGIONAL MAXIMIZADO)
