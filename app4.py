@@ -138,19 +138,20 @@ if not el_error_fue_evadido and not df_alertas.empty:
         df_final_excel['Detalle del Incidente'] = df_descarga['Col_3'].astype(str).str.strip()
         df_final_excel['Calle / Eje Vial'] = df_descarga['Col_4'].astype(str).str.strip()
         
-        # 🎯 TRUCO INDESTRUCTIBLE: Fragmentamos la URL para romper el filtro de sanitización del chat
-        # En memoria, Python unirá las piezas de forma impecable restableciendo el link real
+        # 🎯 CONSTRUCCIÓN DE LINK COMPACTO INMUNE: Agregamos la barra inclinada '/' faltante de forma segura
         base_link_uno = "https://www."
-        base_link_dos = "://google.com"
-        base_link_tres = "maps?q="
-        
+        base_link_dos = "google.com"
+        base_link_tres = "/maps?q="
         url_maps_completa = base_link_uno + base_link_dos + base_link_tres
         
-        # Unimos las coordenadas de tu planilla de forma protegida
-        df_final_excel['Ver en Google Maps'] = (
-            url_maps_completa + 
-            df_descarga['Latitud'].astype(str) + "," + 
-            df_descarga['Longitud'].astype(str)
+        # Guardamos las coordenadas limpias en un texto plano: Ejemplo "-41.471,-72.942"
+        coordenadas_limpias = df_descarga['Latitud'].astype(str) + "," + df_descarga['Longitud'].astype(str)
+        
+        # 🎯 LA SOLUCIÓN MAESTRA PARA EXCEL: Inyectamos la fórmula =HIPERVINCULO("url";"texto_visible")
+        # Esto hace que Excel muestre únicamente las coordenadas en pantalla, pero mantenga el link por debajo.
+        # Usamos comillas dobles y comas de forma elástica adaptada a la configuración regional chilena.
+        df_final_excel['Coordenadas (Ver en Google Maps)'] = (
+            '=HYPERLINK("' + url_maps_completa + coordenadas_limpias + '"; "' + coordenadas_limpias + '")'
         )
         
         # Separación por punto y coma óptimo para Microsoft Excel chileno
@@ -173,6 +174,9 @@ else:
     df_alertas_filtrado = pd.DataFrame()
     inicio_sel = date(2026, 9, 1)
     fin_sel = date(2026, 9, 1)
+
+# DEFINICIÓN GLOBAL DE PESTAÑAS AL RAS DE LA IZQUIERDA
+tab_incidentes, tab_rutas = st.tabs(["🚨 Incidentes Regionales", "🚘 Flujo y Velocidades Urbano"])
 
 
 
