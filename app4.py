@@ -138,8 +138,14 @@ if not el_error_fue_evadido and not df_alertas.empty:
         df_final_excel['Clasificación del Evento'] = df_descarga['Tipo_Incidente'].astype(str).str.strip()
         df_final_excel['Detalle del Incidente'] = df_descarga['Col_3'].astype(str).str.strip()
         df_final_excel['Calle / Eje Vial'] = df_descarga['Col_4'].astype(str).str.strip()
-        df_final_excel['Latitud'] = df_descarga['Latitud']
-        df_final_excel['Longitud'] = df_descarga['Longitud']
+        
+        # 🎯 COLUMNA INTELIGENTE: Construimos el hipervínculo clickeable para Microsoft Excel
+        # Al unir las coordenadas con la base de Google, Excel lo transforma en un link azul directo
+        df_final_excel['Ver en Google Maps'] = (
+            "https://google.com" + 
+            df_descarga['Latitud'].astype(str) + "," + 
+            df_descarga['Longitud'].astype(str)
+        )
         
         # Separación por punto y coma óptimo para Microsoft Excel chileno
         csv_datos = df_final_excel.to_csv(sep=';', index=False, encoding='utf-8-sig').encode('utf-8-sig')
@@ -162,7 +168,8 @@ else:
     inicio_sel = date(2026, 9, 1)
     fin_sel = date(2026, 9, 1)
 
-# 🎯 CIERRE LIMPIO: Eliminamos la línea st.tabs para borrar el menú colgado de arriba
+# 🎯 CIERRE LIMPIO: Sin st.tabs para mantener el menú superior borrado de tu pantalla
+
 
 
 
