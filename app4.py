@@ -132,7 +132,7 @@ if not el_error_fue_evadido and not df_alertas.empty:
     if not df_alertas_filtrado.empty:
         df_descarga = df_alertas_filtrado.copy()
         
-        # 🔍 ASIGNACIÓN MANUAL SEGURA: Mapeamos los casilleros de forma independiente para no fallar jamás
+        # Asignación manual segura mapeando casilleros
         df_final_excel = pd.DataFrame()
         df_final_excel['Fecha y Hora'] = df_descarga['Col_0'].astype(str).str.strip()
         df_final_excel['Clasificación del Evento'] = df_descarga['Tipo_Incidente'].astype(str).str.strip()
@@ -141,7 +141,7 @@ if not el_error_fue_evadido and not df_alertas.empty:
         df_final_excel['Latitud'] = df_descarga['Latitud']
         df_final_excel['Longitud'] = df_descarga['Longitud']
         
-        # 🎯 LA CLAVE TÉCNICA: Usamos punto y coma (sep=';') y el encoding utf-8-sig para chilenizar las celdas
+        # Separación por punto y coma óptimo para Microsoft Excel chileno
         csv_datos = df_final_excel.to_csv(sep=';', index=False, encoding='utf-8-sig').encode('utf-8-sig')
         
         # Nombre dinámico automático del archivo adjunto según el rango temporal
@@ -162,8 +162,8 @@ else:
     inicio_sel = date(2026, 9, 1)
     fin_sel = date(2026, 9, 1)
 
-# DEFINICIÓN GLOBAL DE PESTAÑAS AL RAS DE LA IZQUIERDA
-tab_incidentes, tab_rutas = st.tabs(["🚨 Incidentes Regionales", "🚘 Flujo y Velocidades Urbano"])
+# 🎯 CIERRE LIMPIO: Eliminamos la línea st.tabs para borrar el menú colgado de arriba
+
 
 
 # ==========================================
